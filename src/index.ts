@@ -1,19 +1,114 @@
 import { users, products, purchases, getAllUsers, createProduct, getAllProducts, getProductById, queryProductsByName, createPurchase, getAllPurchasesFromUserId } from "./database";
 import { CATEGORY } from "./database";
 import { createUser } from "./database";
+import express, {Request, Response} from "express"
+import cors from "cors"
+import { TProduct, TPurchase, TUser } from "./types";
 
-createUser("Gabriel","gabriel1234@gmail.com", "kaka123" )
+const app = express()
 
-getAllUsers()
+app.use(express.json())
+app.use(cors())
 
-createProduct("F", "Feijão", 25, CATEGORY.ESSENCIAL)
+app.listen(3003, () => {
+    console.log("Servidor rodando na porta 3003");
+});
 
-getAllProducts()
+app.get('/ping', (req: Request, res:Response) =>{
+    res.status(200).send("Pong")
+})
 
-getProductById("F")
+app.get('/users', (req: Request, res:Response) =>{
+    res.status(200).send(users)
+})
+
+app.get('/products', (req: Request, res:Response) =>{
+    res.status(200).send(products)
+})
+
+app.get('/purchases', (req: Request, res:Response) =>{
+    res.status(200).send(purchases)
+})
+
+app.get('/products/search', (req: Request, res:Response) =>{
+    const q = req.query.q as string
+
+    const result = products.filter((product) =>{
+        return product.name.toLowerCase().includes(q.toLowerCase())
+        
+    })
+    res.status(200).send(result)
+})
+
+app.post('/users', (req: Request, res:Response) =>{
+    const id = req.body.id as string
+    const email = req.body.email as string
+    const password = req.body.password as string
+
+    const newUser:TUser ={
+        id,
+        email,
+        password
+    }
+
+    users.push(newUser)
+    res.status(201).send("Usuário cadastrado com sucesso!")
+})
+
+app.post('/products', (req: Request, res:Response) =>{
+    const id = req.body.id as string
+    const name = req.body.name as string
+    const price = req.body.price as number
+    const category = req.body.category as CATEGORY
+
+
+    const newProduct:TProduct ={
+        id,
+        name,
+        price,
+        category
+    }
+
+    products.push(newProduct)
+    res.status(201).send("Produto cadastrado com sucesso!")
+
+})
+
+app.post('/purchases', (req: Request, res:Response) =>{
+    const userId = req.body.userId as string
+    const productId = req.body.productId as string
+    const productName = req.body.productName as string
+    const quantity = req.body.quantity as number
+    const totalPrice = req.body.totalPrice as number
+
+
+
+    const newPurchase:TPurchase ={
+        userId,
+        productId,
+        productName,
+        quantity,
+        totalPrice
+    }
+
+    purchases.push(newPurchase)
+    res.status(201).send("Compra realizada com sucesso!")
+})
+
+// createUser("Gabriel","gabriel1234@gmail.com", "kaka123" )
+
+// getAllUsers()
+
+// createProduct("F", "Feijão", 25, CATEGORY.ESSENCIAL)
+
+// getAllProducts()
+
+// getProductById("F")
   
-queryProductsByName("Arroz")
+// queryProductsByName("Arroz")
 
-createPurchase("gabriel", "F", "Feijão", 1, 25)
+// createPurchase("gabriel", "F", "Feijão", 1, 25)
 
-getAllPurchasesFromUserId("gabriel")
+// getAllPurchasesFromUserId("gabriel")
+
+
