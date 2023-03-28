@@ -54,84 +54,84 @@ export const purchases:TPurchase[] = [
 ]
 
 
-export function getAllUsers () {
-    console.log("Todas as pessoas cadastradas são:\n")
-    console.log(users,"\n")
+// export function getAllUsers () {
+//     console.log("Todas as pessoas cadastradas são:\n")
+//     console.log(users,"\n")
     
-}
+// }
 
-export function createUser(idrecebido:string, emailrecebido:string, passwordrecebido:string) {
+// export function createUser(idrecebido:string, emailrecebido:string, passwordrecebido:string) {
     
-    const jatemesseitem = users.find((user) => user.id === idrecebido)
-    if(jatemesseitem){
-        console.log("Usuário ja cadastrado!\n")
-    }
-    else{
-        const array:TUser =
-        {id: idrecebido, email:emailrecebido, password:passwordrecebido}
+//     const jatemesseitem = users.find((user) => user.id === idrecebido)
+//     if(jatemesseitem){
+//         console.log("Usuário ja cadastrado!\n")
+//     }
+//     else{
+//         const array:TUser =
+//         {id: idrecebido, email:emailrecebido, password:passwordrecebido}
         
-        users.push(array)
-        console.log("Cadastro realizado com sucesso!\n")
-    }
-}
+//         users.push(array)
+//         console.log("Cadastro realizado com sucesso!\n")
+//     }
+// }
 
-export function createProduct(idrecebido:string, namerecebido:string, pricerecebido:number, categoryrecebido:string) {
+// export function createProduct(idrecebido:string, namerecebido:string, pricerecebido:number, categoryrecebido:string) {
 
-    const jatemesseitem = products.find((product) => product.id === idrecebido && product.name === namerecebido)
-    if(jatemesseitem){
-        console.log("Produto já cadastrado!\n")
-    }
-    else{
-        const array:TProduct =
-            {id: idrecebido, name:namerecebido, price:pricerecebido, category:categoryrecebido }
+//     const jatemesseitem = products.find((product) => product.id === idrecebido && product.name === namerecebido)
+//     if(jatemesseitem){
+//         console.log("Produto já cadastrado!\n")
+//     }
+//     else{
+//         const array:TProduct =
+//             {id: idrecebido, name:namerecebido, price:pricerecebido, category:categoryrecebido }
         
-        products.push(array)
-        console.log("Cadastro do produto realizado com sucesso!\n")
-    }
-}
+//         products.push(array)
+//         console.log("Cadastro do produto realizado com sucesso!\n")
+//     }
+// }
 
 
-export function getAllProducts () {
-    console.log("Todas os produtos cadastrados são:\n")
-    console.log(products,"\n")
-}
+// export function getAllProducts () {
+//     console.log("Todas os produtos cadastrados são:\n")
+//     console.log(products,"\n")
+// }
 
-export function getProductById (idrecebido:string){
-    const jatemesseitem = products.filter((product) => product.id === idrecebido)
-    if(jatemesseitem){
-        console.log("Produto encontrado!\n")
-        console.log(jatemesseitem,"\n")
-    }
-    else{
-        console.log(jatemesseitem,"\n")
-    }
-}
-export function queryProductsByName(namerecebido:string){
-    const jatemesseitem = products.filter((product) => product.name === namerecebido)
-    if(jatemesseitem){
-        console.log(`Produtos encontrados com a palavra: ${namerecebido}: \n`)
-        console.log(jatemesseitem,"\n")
-    }
-    else{
-        console.log("Produto não encontrado.\n")
-    }
-}
+// export function getProductById (idrecebido:string){
+//     const jatemesseitem = products.filter((product) => product.id === idrecebido)
+//     if(jatemesseitem){
+//         console.log("Produto encontrado!\n")
+//         console.log(jatemesseitem,"\n")
+//     }
+//     else{
+//         console.log(jatemesseitem,"\n")
+//     }
+// }
+// export function queryProductsByName(namerecebido:string){
+//     const jatemesseitem = products.filter((product) => product.name === namerecebido)
+//     if(jatemesseitem){
+//         console.log(`Produtos encontrados com a palavra: ${namerecebido}: \n`)
+//         console.log(jatemesseitem,"\n")
+//     }
+//     else{
+//         console.log("Produto não encontrado.\n")
+//     }
+// }
 
-export function createPurchase (userIdrecebido:string, productIdrecebido:string, namerecebido:string, quantityrecebido:number, totalPricerecebido:number) {
-    const jatemesseitem = users.find((user) => user.id === userIdrecebido)
-    if(jatemesseitem){
-        const array:TPurchase =
-        {userId: userIdrecebido, productId:productIdrecebido, productName:namerecebido, quantity:quantityrecebido, totalPrice:totalPricerecebido }
+// export function createPurchase (userIdrecebido:string, productIdrecebido:string, namerecebido:string, quantityrecebido:number, totalPricerecebido:number) {
+//     const jatemesseitem = users.find((user) => user.id === userIdrecebido)
+//     if(jatemesseitem){
+//         const array:TPurchase =
+//         {userId: userIdrecebido, productId:productIdrecebido, productName:namerecebido, quantity:quantityrecebido, totalPrice:totalPricerecebido, id:"5" }
     
-        purchases.push(array)
-        console.log("Cadastro da compra realizada com sucesso!\n")
-    }
-}
+//         purchases.push(array)
+//         console.log("Cadastro da compra realizada com sucesso!\n")
+//     }
+// }
 
-export function getAllPurchasesFromUserId (userIdrecebido:string) {
-    const jatemesseitem = purchases.filter((purchases) => purchases.userId === userIdrecebido)
-    if(jatemesseitem){
-        console.log(`Compras realizadas por ${userIdrecebido}:\n`)
-        console.log(jatemesseitem)
-    }
-}
+// export function getAllPurchasesFromUserId (userIdrecebido:string) {
+//     const jatemesseitem = purchases.filter((purchases) => purchases.userId === userIdrecebido)
+//     if(jatemesseitem){
+//         console.log(`Compras realizadas por ${userIdrecebido}:\n`)
+//         console.log(jatemesseitem)
+//     }
+// }
