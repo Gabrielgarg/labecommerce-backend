@@ -1,16 +1,16 @@
 -- Active: 1680527572141@@127.0.0.1@3306
 
 CREATE TABLE users (
-	id INTEGER PRIMARY KEY UNIQUE NOT NULL,
+	id TEXT PRIMARY KEY UNIQUE NOT NULL,
     name TEXT NOT NULL,
 	email TEXT UNIQUE NOT NULL,
 	password TEXT NOT NULL
 );
 
 INSERT INTO users(id, name, email, password)
-VALUES(1, "Gabriel", "gabriel123@gmail.com", "gabriel123"),
-(2, "Joao", "joao123@gmail.com", "joao123"),
-(3, "Felipe", "felipe123@gmail.com", "felipe123");
+VALUES("1", "Gabriel", "gabriel123@gmail.com", "gabriel123"),
+("2", "Joao", "joao123@gmail.com", "joao123"),
+("3", "Felipe", "felipe123@gmail.com", "felipe123");
 
 
 CREATE TABLE products (
@@ -74,7 +74,45 @@ SELECT * FROM users ORDER BY email ASC;
 SELECT * FROM products ORDER BY price ASC LIMIT 20 OFFSET 1;
 
 -- Get all products using space between the prices
-SELECT * FROM products WHERE price >= 5 AND price <= 10 ORDER BY price ASC
+SELECT * FROM products WHERE price >= 5 AND price <= 10 ORDER BY price ASC;
+
+-- New tab of purchase using REFERENCES
+CREATE TABLE purchases(
+	id TEXT PRIMARY KEY UNIQUE NOT NULL,
+	total_price REAL NOT NULL,
+	paid INTEGER NOT NULL,
+	delivered_at TEXT,
+	buyer_id TEXT NOT NULL,
+	FOREIGN KEY (buyer_id) REFERENCES users(id)
+);
+
+
+-- Fulling the table of purchases
+INSERT INTO purchases(id, total_price, paid, delivered_at, buyer_id)
+VALUES("p1", 50, 0, NULL, "1"),
+("p2", 30, 0, NULL, "1"),
+("p3", 40, 0, NULL, "2"),
+("p4", 10, 0, NULL, "2"),
+("p5", 5, 0, NULL, "3"),
+("p6", 35, 0, NULL, "3");
+
+-- Updating the table with the new date and if is paid or not
+UPDATE purchases
+SET delivered_at = DATETIME('now'),
+paid = 1
+WHERE id = "p1" OR id = "p2" OR id = "p3" OR id = "p4" OR id = "p5" OR id = "p6";
+
+-- Showing what's necessary of the purchase.
+SELECT users.id as UsersId, users.name as Name, email, purchases.id as PurchaseId, paid, delivered_at, purchases.buyer_id as BuyerId, total_price FROM users INNER JOIN purchases on buyer_id = users.id;
+
+-- SELECT * from purchases;
+
+-- SELECT DATE('now');
+
+-- DROP TABLE purchases;
+
+
+
 
 -- Formas de atualizar dados:
 
