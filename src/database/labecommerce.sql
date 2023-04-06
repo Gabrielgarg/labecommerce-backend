@@ -231,6 +231,8 @@ VALUES ("p3", "4", 4), ("p4", "3", 2), ("p5", "2", 2);
 
 DROP TABLE purchases_products;
 
+-- Usando o LEFT ele mostra todos, e os que não foram vendidos ele mostra como NULL.
+
 SELECT
     products.id AS productID,
     products.name AS nameofproduct,
@@ -239,8 +241,8 @@ SELECT
     purchases_products.purchase_id AS purchaseID,
     purchases.total_price AS totalpriceofpurchase
 FROM products
-    INNER JOIN purchases_products ON purchases_products.product_id = products.id
-    INNER JOIN purchases ON purchases_products.purchase_id = purchases.id;
+    LEFT JOIN purchases_products ON purchases_products.product_id = products.id
+    LEFT JOIN purchases ON purchases_products.purchase_id = purchases.id;
 
 -- SELECT * from purchases;
 
