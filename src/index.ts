@@ -265,10 +265,7 @@ app.post('/products', async (req: Request, res:Response) =>{
 
 //Add new purchase
 app.post('/purchases', async (req: Request, res:Response) =>{
-
     try {
-        
-
         const id = req.body.id as string | undefined
         const buyerId = req.body.buyerId as string | undefined
         const productId = req.body.productId as string | undefined
@@ -348,10 +345,10 @@ app.get("/products/:id", async (req: Request, res: Response) =>{
 
     try {
         
-        const id = req.params.id as string
+        const id = req.params.id as string | undefined
         if(id !== undefined){
 
-            const [jatemesseidproduct] = await db.raw(`SELECT * FROM products WHERE id = "${id}";`)
+            const jatemesseidproduct = await db.raw(`SELECT * FROM products WHERE id = "${id}";`)
 
             // const jatemesseidproduct = products.find((product) => product.id === id)
             if(jatemesseidproduct){
@@ -389,9 +386,11 @@ app.get("/products/:id", async (req: Request, res: Response) =>{
 app.get("/users/:id/purchases", async(req: Request, res: Response) =>{
     try {
 
-        const id = req.params.id as string
+        const id = req.params.id as string | undefined
+
         if(id !== undefined){
-            const [jatemesseidpurchase] = await db.raw(`SELECT * FROM purchases WHERE buyer_id = "${id}";`)
+            const jatemesseidpurchase = await db.raw(`SELECT * FROM purchases WHERE buyer_id = "${id}";`)
+
             // const jatemesseidpurchase = purchases.find((purchase) => purchase.userId === id)
             if(jatemesseidpurchase){
                 res.status(200).send(jatemesseidpurchase)
@@ -429,7 +428,7 @@ app.get("/users/:id/purchases", async(req: Request, res: Response) =>{
 app.delete("/users/:id/", (req: Request, res: Response) =>{
 
     try {
-        const id = req.params.id as string
+        const id = req.params.id as string | undefined
 
         if(id !== undefined){
             const jatemesseiduser = users.find((user) => user.id === id)
@@ -467,7 +466,7 @@ app.delete("/users/:id/", (req: Request, res: Response) =>{
 app.delete("/products/:id/", (req: Request, res: Response) =>{
 
     try {
-        const id = req.params.id as string
+        const id = req.params.id as string | undefined
         if(id !== undefined){
             const jatemesseidproduct = products.find((product) => product.id === id)
             if(jatemesseidproduct){
@@ -503,7 +502,7 @@ app.delete("/products/:id/", (req: Request, res: Response) =>{
 app.put("/users/:id", (req: Request, res: Response) =>{
 
     try {
-        const id = req.params.id as string
+        const id = req.params.id as string | undefined
         if(id !== undefined){
             const jatemesseiduser = users.find((user) => user.id === id)
             if(jatemesseiduser){
@@ -555,7 +554,7 @@ app.put("/users/:id", (req: Request, res: Response) =>{
 app.put("/products/:id", (req: Request, res: Response) =>{
 
     try {
-        const id = req.params.id as string
+        const id = req.params.id as string | undefined
         if(id !== undefined){
             const jatemesseidproduct = products.find((product) => product.id === id)
             if(jatemesseidproduct){

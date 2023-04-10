@@ -45,8 +45,6 @@ VALUES (
         DATETIME('now')
     );
 
-SELECT * FROM users;
-
 CREATE TABLE
     products (
         id TEXT PRIMARY KEY UNIQUE NOT NULL,
@@ -181,7 +179,7 @@ ORDER BY price ASC;
 CREATE TABLE
     purchases(
         id TEXT PRIMARY KEY UNIQUE NOT NULL,
-        paid INTEGER NOT NULL,
+        paid INTEGER NOT NULL DEFAULT 0,
         total_price REAL NOT NULL,
         delivered_at TEXT,
         createdAt TEXT,
@@ -261,6 +259,8 @@ VALUES (
     );
 
 -- Deleting the table of purchases
+
+SELECT * FROM purchases WHERE buyer_id = 1;
 
 DROP TABLE purchases;
 
