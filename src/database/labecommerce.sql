@@ -5,27 +5,47 @@ CREATE TABLE
         id TEXT PRIMARY KEY UNIQUE NOT NULL,
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL
+        password TEXT NOT NULL,
+        createdAt TEXT
     );
 
+DROP TABLE users;
+
+DROP table products;
+
+DROP TABLE purchases;
+
+drop table purchases_products;
+
 INSERT INTO
-    users(id, name, email, password)
+    users(
+        id,
+        name,
+        email,
+        password,
+        createdAt
+    )
 VALUES (
         "1",
         "Gabriel",
         "gabriel123@gmail.com",
-        "gabriel123"
+        "gabriel123",
+        DATETIME('now')
     ), (
         "2",
         "Joao",
         "joao123@gmail.com",
-        "joao123"
+        "joao123",
+        DATETIME('now')
     ), (
         "3",
         "Felipe",
         "felipe123@gmail.com",
-        "felipe123"
+        "felipe123",
+        DATETIME('now')
     );
+
+SELECT * FROM users;
 
 CREATE TABLE
     products (
@@ -33,7 +53,9 @@ CREATE TABLE
         name TEXT NOT NULL,
         price REAL NOT NULL,
         category TEXT NOT NULL,
-        type TEXT NOT NULL
+        type TEXT NOT NULL,
+        description TEXT,
+        imageUrl TEXT
     );
 
 INSERT INTO
@@ -159,9 +181,12 @@ ORDER BY price ASC;
 CREATE TABLE
     purchases(
         id TEXT PRIMARY KEY UNIQUE NOT NULL,
-        total_price REAL NOT NULL,
         paid INTEGER NOT NULL,
+        total_price REAL NOT NULL,
         delivered_at TEXT,
+        createdAt TEXT,
+        productId TEXT NOT NULL,
+        quantity INTEGER NOT NULL,
         buyer_id TEXT NOT NULL,
         FOREIGN KEY (buyer_id) REFERENCES users(id)
     );
@@ -174,9 +199,66 @@ INSERT INTO
         total_price,
         paid,
         delivered_at,
-        buyer_id
+        buyer_id,
+        createdAt,
+        productId,
+        quantity
     )
-VALUES ("p1", 50, 0, NULL, "1"), ("p2", 30, 0, NULL, "1"), ("p3", 40, 0, NULL, "2"), ("p4", 10, 0, NULL, "2"), ("p5", 7, 0, NULL, "3"), ("p6", 35, 0, NULL, "3");
+VALUES (
+        "p1",
+        50,
+        0,
+        NULL,
+        "1",
+        DATETIME('now'),
+        "4",
+        5
+    ), (
+        "p2",
+        30,
+        0,
+        NULL,
+        "1",
+        DATETIME('now'),
+        "4",
+        3
+    ), (
+        "p3",
+        40,
+        0,
+        NULL,
+        "2",
+        DATETIME('now'),
+        "3",
+        8
+    ), (
+        "p4",
+        10.1,
+        0,
+        NULL,
+        "2",
+        DATETIME('now'),
+        "1",
+        1
+    ), (
+        "p5",
+        7,
+        0,
+        NULL,
+        "3",
+        DATETIME('now'),
+        "2",
+        2
+    ), (
+        "p6",
+        35,
+        0,
+        NULL,
+        "3",
+        DATETIME('now'),
+        "3",
+        7
+    );
 
 -- Deleting the table of purchases
 
@@ -244,11 +326,13 @@ FROM products
     LEFT JOIN purchases_products ON purchases_products.product_id = products.id
     LEFT JOIN purchases ON purchases_products.purchase_id = purchases.id;
 
--- SELECT * from purchases;
+SELECT * from purchases_products;
 
 -- SELECT DATE('now');
 
--- DROP TABLE purchases;
+DROP TABLE products;
+
+DROP table users;
 
 -- Formas de atualizar dados:
 
