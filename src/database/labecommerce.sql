@@ -17,6 +17,8 @@ DROP TABLE purchases;
 
 drop table purchases_products;
 
+SELECT * from users;
+
 INSERT INTO
     users(
         id,
@@ -184,12 +186,13 @@ CREATE TABLE
         delivered_at TEXT,
         createdAt TEXT,
         productId TEXT NOT NULL,
-        quantity INTEGER NOT NULL,
         buyer_id TEXT NOT NULL,
         FOREIGN KEY (buyer_id) REFERENCES users(id)
     );
 
 -- Fulling the table of purchases
+
+SELECT * FROM purchases;
 
 INSERT INTO
     purchases(
@@ -199,63 +202,56 @@ INSERT INTO
         delivered_at,
         buyer_id,
         createdAt,
-        productId,
-        quantity
+        productId
     )
 VALUES (
         "p1",
-        50,
+        0,
         0,
         NULL,
         "1",
         DATETIME('now'),
-        "4",
-        5
+        "4"
     ), (
         "p2",
-        30,
+        0,
         0,
         NULL,
         "1",
         DATETIME('now'),
-        "4",
-        3
+        "4"
     ), (
         "p3",
-        40,
+        0,
         0,
         NULL,
         "2",
         DATETIME('now'),
-        "3",
-        8
+        "3"
     ), (
         "p4",
-        10.1,
+        0,
         0,
         NULL,
         "2",
         DATETIME('now'),
-        "1",
-        1
+        "1"
     ), (
         "p5",
-        7,
+        0,
         0,
         NULL,
         "3",
         DATETIME('now'),
-        "2",
-        2
+        "2"
     ), (
         "p6",
-        35,
+        0,
         0,
         NULL,
         "3",
         DATETIME('now'),
-        "3",
-        7
+        "3"
     );
 
 -- Deleting the table of purchases
@@ -310,6 +306,14 @@ INSERT INTO
 VALUES ("p3", "4", 4), ("p4", "3", 2), ("p5", "2", 2);
 
 -- DELETE FROM purchases_products;
+
+INSERT INTO
+    purchases_products(
+        purchase_id,
+        product_id,
+        quantity
+    )
+VALUES ("p3", "2", 1);
 
 DROP TABLE purchases_products;
 
