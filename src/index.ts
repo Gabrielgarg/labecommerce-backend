@@ -23,7 +23,8 @@ app.get('/ping', (req: Request, res:Response) =>{
 //Get all the users
 app.get('/users', async (req: Request, res:Response) =>{
     try {
-        const result = await db.raw(`SELECT * FROM users;`)
+        const result = await db("users")
+        // const result = await db.raw(`SELECT * FROM users;`)
         res.status(200).send(result)
     } catch (error) {
         if(res.statusCode === 200){
@@ -44,7 +45,8 @@ app.get('/users', async (req: Request, res:Response) =>{
 //Get all the products
 app.get('/products', async (req: Request, res:Response) =>{
     try {
-        const result = await db.raw(`SELECT * FROM products;`)
+        const result = await db("products")
+        // const result = await db.raw(`SELECT * FROM products;`)
         res.status(200).send(result)
     } catch (error) {
         //Verifica se deu algum erro imprevisto no servidor
@@ -68,7 +70,8 @@ app.get('/products', async (req: Request, res:Response) =>{
 //Get all the purchases
 app.get('/purchases', async (req: Request, res:Response) =>{
     try {
-        const result = await db.raw(`SELECT * FROM purchases;`)
+        const result = await db("purchases")
+        // const result = await db.raw(`SELECT * FROM purchases;`)
         res.status(200).send(result)
     } catch (error) {
         if(res.statusCode === 200){
@@ -341,35 +344,89 @@ app.post('/purchases', async (req: Request, res:Response) =>{
 
 
 //Get product by id
-app.get("/products/:id", async (req: Request, res: Response) =>{
+// app.get("/products/:id", async (req: Request, res: Response) =>{
 
-    try {
+//     try {
         
-        const id = req.params.id as string | undefined
-        if(id !== undefined){
+//         const id = req.params.id as string | undefined
+//         if(id !== undefined){
 
-            const jatemesseidproduct = await db.raw(`SELECT * FROM products WHERE id = "${id}";`)
+//             const jatemesseidproduct = await db.raw(`SELECT * FROM products WHERE id = "${id}";`)
 
-            // const jatemesseidproduct = products.find((product) => product.id === id)
-            if(jatemesseidproduct){
+//             // const jatemesseidproduct = products.find((product) => product.id === id)
+//             if(jatemesseidproduct){
 
-                res.status(200).send(jatemesseidproduct)
+//                 res.status(200).send(jatemesseidproduct)
 
-                // const itemselecionado = products.find((product) => {
-                //    if(product.id === id){
-                //     return product
-                //    }
-                // })
-                // res.status(200).send(itemselecionado)
+//                 // const itemselecionado = products.find((product) => {
+//                 //    if(product.id === id){
+//                 //     return product
+//                 //    }
+//                 // })
+//                 // res.status(200).send(itemselecionado)
+//             }
+//         }
+//         else{
+//             res.status(400).send("Produto não encontrado")
+//         }
+//     } catch (error) {
+//         if(res.statusCode === 200){
+//             res.status(500)
+//             res.send("Erro")
+//         }
+
+//         if(error instanceof Error){
+
+//             res.send(error.message)
+//         }
+//         else{
+//             console.log("Erro inesperado.")
+//         }
+//     }
+// })
+
+//Get purchase by id using query builder
+app.get("/purchases/:id", async(req: Request, res: Response) =>{
+    try {
+        const idrecebido = req.params.id as string
+
+        if(idrecebido !== undefined){
+            const productList = await db.select("products.id as id do produto", "products.name as nome", "products.price as preco", "products.description as descricao", "products.imageUrl as link da imagem", "purchases_products.quantity as quantidade")
+            .from("purchases_products")
+            .innerJoin("products", "purchases_products.product_id", "=", "products.id")
+            .where({"purchase_id": idrecebido})
+
+            const [jatemesseidpurchase] = await db.select("purchases.id as id da compra", "purchases.total_price as preco_total", "purchases.createdAt as compra feita dia","purchases.paid as pago", "purchases.buyer_id as id do comprador", "users.name as nome", "users.email as email")
+            .from("purchases")
+            .innerJoin("users", "purchases.buyer_id", "=", "users.id")
+            .where({'purchases.id': idrecebido})
+            
+            if(jatemesseidpurchase.pago === 0){
+                
+                jatemesseidpurchase.pago = false
             }
+            else{
+                jatemesseidpurchase.pago = true
+            }
+
+            if(productList && jatemesseidpurchase){
+                for(let x = 0; x <= productList.length -1; x++){
+                    jatemesseidpurchase.preco_total = jatemesseidpurchase.preco_total + (productList[x].preco * productList[x].quantidade)
+                }
+                res.status(200).send({...jatemesseidpurchase,productList})
+            }
+            
         }
         else{
-            res.status(400).send("Produto não encontrado")
+            res.status(400)
+            throw new Error("Id não encontrado.")
         }
-    } catch (error) {
+
+
+    } catch (error:any) {
         if(res.statusCode === 200){
             res.status(500)
-            res.send("Erro")
+            res.send(error.message)
         }
 
         if(error instanceof Error){
@@ -383,7 +440,7 @@ app.get("/products/:id", async (req: Request, res: Response) =>{
 })
 
 //Get purchase by id
-app.get("/users/:id/purchases", async(req: Request, res: Response) =>{
+app.get("/purchases/:id", async(req: Request, res: Response) =>{
     try {
 
         const id = req.params.id as string | undefined
