@@ -343,47 +343,47 @@ app.post('/purchases', async (req: Request, res:Response) =>{
 })
 
 
-//Get product by id
-// app.get("/products/:id", async (req: Request, res: Response) =>{
+// Get product by id
+app.get("/products/:id", async (req: Request, res: Response) =>{
 
-//     try {
+    try {
         
-//         const id = req.params.id as string | undefined
-//         if(id !== undefined){
+        const id = req.params.id as string | undefined
+        if(id !== undefined){
 
-//             const jatemesseidproduct = await db.raw(`SELECT * FROM products WHERE id = "${id}";`)
+            const jatemesseidproduct = await db.raw(`SELECT * FROM products WHERE id = "${id}";`)
 
-//             // const jatemesseidproduct = products.find((product) => product.id === id)
-//             if(jatemesseidproduct){
+            // const jatemesseidproduct = products.find((product) => product.id === id)
+            if(jatemesseidproduct){
 
-//                 res.status(200).send(jatemesseidproduct)
+                res.status(200).send(jatemesseidproduct)
 
-//                 // const itemselecionado = products.find((product) => {
-//                 //    if(product.id === id){
-//                 //     return product
-//                 //    }
-//                 // })
-//                 // res.status(200).send(itemselecionado)
-//             }
-//         }
-//         else{
-//             res.status(400).send("Produto não encontrado")
-//         }
-//     } catch (error) {
-//         if(res.statusCode === 200){
-//             res.status(500)
-//             res.send("Erro")
-//         }
+                // const itemselecionado = products.find((product) => {
+                //    if(product.id === id){
+                //     return product
+                //    }
+                // })
+                // res.status(200).send(itemselecionado)
+            }
+        }
+        else{
+            res.status(400).send("Produto não encontrado")
+        }
+    } catch (error) {
+        if(res.statusCode === 200){
+            res.status(500)
+            res.send("Erro")
+        }
 
-//         if(error instanceof Error){
+        if(error instanceof Error){
 
-//             res.send(error.message)
-//         }
-//         else{
-//             console.log("Erro inesperado.")
-//         }
-//     }
-// })
+            res.send(error.message)
+        }
+        else{
+            console.log("Erro inesperado.")
+        }
+    }
+})
 
 //Get purchase by id using query builder
 app.get("/purchases/:id", async(req: Request, res: Response) =>{
@@ -440,62 +440,64 @@ app.get("/purchases/:id", async(req: Request, res: Response) =>{
 })
 
 //Get purchase by id
-app.get("/purchases/:id", async(req: Request, res: Response) =>{
-    try {
+// app.get("/purchases/:id", async(req: Request, res: Response) =>{
+//     try {
 
-        const id = req.params.id as string | undefined
+//         const id = req.params.id as string | undefined
 
-        if(id !== undefined){
-            const jatemesseidpurchase = await db.raw(`SELECT * FROM purchases WHERE buyer_id = "${id}";`)
+//         if(id !== undefined){
+//             const jatemesseidpurchase = await db.raw(`SELECT * FROM purchases WHERE buyer_id = "${id}";`)
 
-            // const jatemesseidpurchase = purchases.find((purchase) => purchase.userId === id)
-            if(jatemesseidpurchase){
-                res.status(200).send(jatemesseidpurchase)
+//             // const jatemesseidpurchase = purchases.find((purchase) => purchase.userId === id)
+//             if(jatemesseidpurchase){
+//                 res.status(200).send(jatemesseidpurchase)
 
-                // const itemselecionado = purchases.find((purchase) => {
-                //    if(purchase.userId === id){
-                //     return purchase
-                //    }
-                // })
-                // res.status(200).send(itemselecionado)
-            }
-        }
-        else{
-            res.status(400).send("Usuário não encontrado")
-        }
-    } catch (error) {
-        if(res.statusCode === 200){
-            res.status(500)
-            res.send("Erro")
-        }
+//                 // const itemselecionado = purchases.find((purchase) => {
+//                 //    if(purchase.userId === id){
+//                 //     return purchase
+//                 //    }
+//                 // })
+//                 // res.status(200).send(itemselecionado)
+//             }
+//         }
+//         else{
+//             res.status(400).send("Usuário não encontrado")
+//         }
+//     } catch (error) {
+//         if(res.statusCode === 200){
+//             res.status(500)
+//             res.send("Erro")
+//         }
 
-        if(error instanceof Error){
+//         if(error instanceof Error){
 
-            res.send(error.message)
-        }
-        else{
-            console.log("Erro inesperado.")
-        }
-    }
+//             res.send(error.message)
+//         }
+//         else{
+//             console.log("Erro inesperado.")
+//         }
+//     }
     
-})
+// })
 
 //Delete user by id
-
-app.delete("/users/:id/", (req: Request, res: Response) =>{
+app.delete("/users/:id", async (req: Request, res: Response) =>{
 
     try {
-        const id = req.params.id as string | undefined
+        const idrecebido = req.params.id as string | undefined
 
-        if(id !== undefined){
-            const jatemesseiduser = users.find((user) => user.id === id)
+        if(idrecebido !== undefined){
+            // const jatemesseiduser = await db.raw(`SELECT * FROM users WHERE id = "${id}";`)
+            const jatemesseiduser = await db.select("*").from("users").where({id: idrecebido})
+            // const jatemesseiduser = users.find((user) => user.id === id)
             if(jatemesseiduser){
-
-                const indextodelete = users.findIndex((user) => user.id === id)
-                if(indextodelete >= 0){
-                    users.splice(indextodelete, 1)
-                }
-            
+                
+                // const indextodelete = users.findIndex((user) => user.id === id)
+                // if(indextodelete >= 0){
+                    //     users.splice(indextodelete, 1)
+                    // }
+                    
+                await db("users").del().where({id: idrecebido})
                 res.status(200).send("Usuário apagado com sucesso!")
             }
         }
@@ -520,19 +522,20 @@ app.delete("/users/:id/", (req: Request, res: Response) =>{
 })
 
 //Delete product by id
-app.delete("/products/:id/", (req: Request, res: Response) =>{
+app.delete("/products/:id/", async(req: Request, res: Response) =>{
 
     try {
-        const id = req.params.id as string | undefined
-        if(id !== undefined){
-            const jatemesseidproduct = products.find((product) => product.id === id)
+        const idrecebido = req.params.id as string | undefined
+        if(idrecebido !== undefined){
+            // const jatemesseidproduct = products.find((product) => product.id === id)
+            const jatemesseidproduct = await db.select("*").from("products").where({id: idrecebido})
             if(jatemesseidproduct){
 
-                const indextodelete = products.findIndex((product) => product.id === id)
-                if(indextodelete >= 0){
-                    products.splice(indextodelete, 1)
-                }
-            
+                // const indextodelete = products.findIndex((product) => product.id === idrecebido)
+                // if(indextodelete >= 0){
+                //     products.splice(indextodelete, 1)
+                // }
+                await db("products").del().where({id: idrecebido})
                 res.status(200).send("Produto apagado com sucesso!")
             }
         }
@@ -556,31 +559,54 @@ app.delete("/products/:id/", (req: Request, res: Response) =>{
 })
 
 //Edit user
-app.put("/users/:id", (req: Request, res: Response) =>{
+app.put("/users/:id", async (req: Request, res: Response) =>{
 
     try {
-        const id = req.params.id as string | undefined
-        if(id !== undefined){
-            const jatemesseiduser = users.find((user) => user.id === id)
+        const idrecebido = req.params.id as string | undefined
+
+        if(idrecebido !== undefined){
+            // const jatemesseiduser = users.find((user) => user.id === id)
+            const [jatemesseiduser] = await db.select("*").from("users").where({id: idrecebido})
             if(jatemesseiduser){
 
                 const newId = req.body.id as string|  undefined
                 const newEmail = req.body.email as string|  undefined
                 const newPassword = req.body.password as string|  undefined
+                const newName = req.body.name as string | undefined
 
-                if(newId !== undefined && newEmail !== undefined && newPassword !== undefined ){
-                    if(typeof newId !== "string" || typeof newEmail !== "string" || typeof newPassword !== "string"){
+                if(newId !== undefined && newEmail !== undefined && newPassword !== undefined  && newName !== undefined){
+                    if(typeof newId !== "string" || typeof newEmail !== "string" || typeof newPassword !== "string" || typeof newName !== "string"){
                         res.status(400)
                         throw new Error("Houve um erro de tipagem nos valores.")
                     }
             
-                const userEdit = users.find((user) => user.id === id)
+                // const userEdit = users.find((user) => user.id === idrecebido)
             
-                if(userEdit){
-                    userEdit.id = newId || userEdit.id
-                    userEdit.email = newEmail || userEdit.email
-                    userEdit.password = newPassword || userEdit.password
-                }
+                // if(userEdit){
+                //     userEdit.id = newId || userEdit.id
+                //     userEdit.email = newEmail || userEdit.email
+                //     userEdit.password = newPassword || userEdit.password
+                // }
+
+
+                await db.raw(`UPDATE users
+                SET 
+                name= "${newName}",
+                id = "${newId}",
+                email= "${newEmail}", 
+                password = "${newPassword}",
+                createdAt = DATETIME('now')
+                WHERE 
+                id = ${idrecebido}`)
+
+                // const newUser = {
+                //     id: newId || jatemesseiduser.id,
+                //     name : newName || jatemesseiduser.name,
+                //     email : newEmail || jatemesseiduser.email,
+                //     password : newPassword || jatemesseiduser.password,
+                //     createdAt: "DATETIME('now')"
+                // }
+                // await db("users").update(newUser).where({id: idrecebido})
             
                 res.status(200).send("Usuário editado com sucesso!!")
             }

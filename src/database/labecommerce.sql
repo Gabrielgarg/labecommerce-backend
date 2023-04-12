@@ -147,7 +147,7 @@ DELETE FROM products WHERE id = "4";
 
 UPDATE users
 SET
-    name = "Lucas",
+    name = "Lucas2",
     email = "lucasnovoemail@gmail.com",
     password = "lucasnovo123"
 WHERE id = 2;
