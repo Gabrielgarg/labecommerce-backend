@@ -272,12 +272,15 @@ app.post('/purchases', async (req: Request, res:Response) =>{
         const id = req.body.id as string | undefined
         const buyerId = req.body.buyerId as string | undefined
         const productId = req.body.productId as string | undefined
-        const quantity = req.body.quantity as number |  undefined
+        const paid = req.body.paid as number | undefined
+        const total_price = req.body.total_price as number | undefined
+        const delivered_at = req.body.delivered_at as number | undefined
+        // const quantity = req.body.quantity as number |  undefined
         // const userId = req.body.userId as string | undefined
         
 
-        if(id !== undefined && productId !== undefined && quantity !== undefined && buyerId !== undefined){
-            if(typeof id !== "string" || typeof productId !== "string" || typeof quantity !== "number" || typeof buyerId !== "string"){
+        if(id !== undefined && productId !== undefined && paid !== undefined && buyerId !== undefined && total_price !== undefined && delivered_at !== undefined){
+            if(typeof id !== "string" || typeof productId !== "string" || typeof paid !== "number" || typeof buyerId !== "string" || typeof total_price !== "number"){
                 res.status(400)
                 throw new Error("Houve um erro de tipagem nos valores.")
             }
@@ -285,7 +288,7 @@ app.post('/purchases', async (req: Request, res:Response) =>{
             const [jatemesseid] = await db.raw(`SELECT * FROM purchases WHERE id = "${id}";`)
             const [jatemesseiduser] = await db.raw(`SELECT * FROM users WHERE id = "${buyerId}";`)
             const [jatemesseidproduct] = await db.raw(`SELECT * FROM products WHERE id = "${productId}";`)
-            const totalPrice =  jatemesseidproduct.price * quantity
+
 
             // const jatemesseiduser = users.find((user) => user.id === userId)
             // const jatemesseidproduct = products.find((product) => product.id === productId)
@@ -297,9 +300,20 @@ app.post('/purchases', async (req: Request, res:Response) =>{
 
             if(jatemesseiduser && jatemesseidproduct){
 
-                await db.raw(`INSERT INTO purchases(id, buyer_id, productId, quantity, total_price, paid, createdAt, delivered_at)
-                VALUES("${id}", "${buyerId}", "${productId}", "${quantity}", "${totalPrice}", "${0}",DATETIME('now'), "${null}");)`);
+                const newPurchase = {
+                    id,
+                    buyerId,
+                    productId,
+                    paid,
+                    total_price,
+                    delivered_at
+                }
+
+                await db("purchases").insert(newPurchase)
                 res.status(201).send("Compra cadastrada com sucesso!")
+
+                // await db.raw(`INSERT INTO purchases(id, buyer_id, productId, quantity, total_price, paid, createdAt, delivered_at)
+                // VALUES("${id}", "${buyerId}", "${productId}", "${quantity}", "${totalPrice}", "${0}",DATETIME('now'), "${null}");)`);
 
 
                 //Força eles recebem o proprio valor.
@@ -558,6 +572,45 @@ app.delete("/products/:id/", async(req: Request, res: Response) =>{
     }
 })
 
+//Delete purchase by id
+app.delete("/purchases/:id/", async(req: Request, res: Response) =>{
+
+    try {
+        const idrecebido = req.params.id as string | undefined
+
+        if(idrecebido !== undefined){
+            // const jatemesseidpurchase = purchases.find((purchase) => purchase.id === id)
+            const jatemesseidpurchase = await db.select("*").from("purchases").where({id: idrecebido})
+            if(jatemesseidpurchase){
+
+                // const indextodelete = products.findIndex((product) => product.id === idrecebido)
+                // if(indextodelete >= 0){
+                //     products.splice(indextodelete, 1)
+                // }
+                await db("purchases").del().where({id: idrecebido})
+                res.status(200).send("Produto apagado com sucesso!")
+            }
+        }
+        else{
+            res.status(400).send("Compra não encontrada")
+        }
+    } catch (error) {
+        if(res.statusCode === 200){
+            res.status(500)
+            res.send("Erro")
+        }
+
+        if(error instanceof Error){
+
+            res.send(error.message)
+        }
+        else{
+            console.log("Erro inesperado.")
+        }
+    }
+})
+
+
 //Edit user
 app.put("/users/:id", async (req: Request, res: Response) =>{
 
@@ -634,37 +687,54 @@ app.put("/users/:id", async (req: Request, res: Response) =>{
 })
 
 //Edit product
-app.put("/products/:id", (req: Request, res: Response) =>{
+app.put("/products/:id", async (req: Request, res: Response) =>{
 
     try {
-        const id = req.params.id as string | undefined
-        if(id !== undefined){
-            const jatemesseidproduct = products.find((product) => product.id === id)
+        const idrecebido = req.params.id as string | undefined
+
+        if(idrecebido !== undefined){
+            // const jatemesseidproduct = products.find((product) => product.id === id)
+            const [jatemesseidproduct] = await db.select("*").from("products").where({id: idrecebido})
             if(jatemesseidproduct){
 
                 const newId = req.body.id as string|  undefined
                 const newName = req.body.name as string|  undefined
                 const newPrice = req.body.price as number|  undefined
                 const newCategory = req.body.category as CATEGORY|  undefined
+                const newType = req.body.type as string | undefined
+                const newDescription = req.body.description as string | undefined | null
+                const newImageUrl = req.body.imageUrl as string | undefined | null
 
-                if(newId !== undefined && newName !== undefined && newPrice !== undefined && newCategory !== undefined  ){
-                    if(typeof newId !== "string" || typeof newName !== "string" || typeof newPrice !== "number" ){
+                if(newId !== undefined && newName !== undefined && newPrice !== undefined && newCategory !== undefined && newType !== undefined){
+                    if(typeof newId !== "string" || typeof newName !== "string" || typeof newPrice !== "number" || typeof newType !== "string" || typeof newCategory !== "string"){
                         res.status(400)
                         throw new Error("Houve um erro de tipagem nos valores.")
                     }
             
-            
-                const productEdit = products.find((product) => product.id === id)
-            
-                if(productEdit){
-                    productEdit.id = newId || productEdit.id
-                    productEdit.name = newName || productEdit.name
-                    productEdit.price = newPrice || productEdit.price
-                    productEdit.category = newCategory || productEdit.category
+                const newProduct = {
+                    id: newId || jatemesseidproduct.id,
+                    name : newName || jatemesseidproduct.name,
+                    price : newPrice || jatemesseidproduct.email,
+                    category : newCategory || jatemesseidproduct.password,
+                    type: newType || jatemesseidproduct.type,
+                    description: newDescription || jatemesseidproduct.description || null,
+                    imageUrl: newImageUrl || jatemesseidproduct.imageUrl || null
                 }
-            
-            
+
+                await db("products").update(newProduct).where({id: idrecebido})
+
                 res.status(200).send("Produto editado com sucesso!!")
+            
+                // const productEdit = products.find((product) => product.id === idrecebido)
+            
+                // if(productEdit){
+                //     productEdit.id = newId || productEdit.id
+                //     productEdit.name = newName || productEdit.name
+                //     productEdit.price = newPrice || productEdit.price
+                //     productEdit.category = newCategory || productEdit.category
+                // }
+            
+            
             }
             else{
                 res.status(400)
