@@ -2,7 +2,7 @@
 Aplicativo para gestão de usuários, produtos, e compras.
 Aplicação back-end de servidor express com banco de dados sqlite3<br>
 
-##Passo-a-passo
+## Passo-a-passo
 npm i - para instalar as dependencias
 npm run dev - para rodar a aplicação
 
