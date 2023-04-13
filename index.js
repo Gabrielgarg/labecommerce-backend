@@ -1,3 +1,3 @@
-const query = process.argv[2]
+const query = process.argv[2];
 
-console.log(query)
+console.log(query);
