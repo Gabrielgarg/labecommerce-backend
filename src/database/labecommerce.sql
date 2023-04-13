@@ -180,14 +180,14 @@ ORDER BY price ASC;
 
 CREATE TABLE
     purchases(
-        id TEXT PRIMARY KEY UNIQUE NOT NULL,
-        paid INTEGER NOT NULL DEFAULT 0,
-        total_price REAL NOT NULL,
-        delivered_at TEXT,
+        id TEXT NOT NULL,
+        paid INTEGER DEFAULT 0,
+        total_price REAL DEFAULT 0,
+        delivered_at TEXT DEFAULT NULL,
         createdAt TEXT,
         productId TEXT NOT NULL,
         buyer_id TEXT NOT NULL,
-        FOREIGN KEY (buyer_id) REFERENCES users(id)
+        FOREIGN KEY (buyer_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
 -- Fulling the table of purchases
@@ -252,6 +252,14 @@ VALUES (
         "3",
         DATETIME('now'),
         "3"
+    ), (
+        "p1",
+        0,
+        0,
+        NULL,
+        "1",
+        DATETIME('now'),
+        "5"
     );
 
 -- Deleting the table of purchases
@@ -337,6 +345,8 @@ SELECT * from purchases_products;
 DROP TABLE products;
 
 DROP table users;
+
+DELETE FROM users WHERE id = "1";
 
 -- Formas de atualizar dados:
 

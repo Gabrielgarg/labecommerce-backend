@@ -273,19 +273,19 @@ app.post('/purchases', async (req: Request, res:Response) =>{
         const buyerId = req.body.buyerId as string | undefined
         const productId = req.body.productId as string | undefined
         const paid = req.body.paid as number | undefined
+        const quantity = req.body.quantity as number |  undefined
         // const total_price = req.body.total_price as number | undefined
         // const delivered_at = req.body.delivered_at as number | undefined
-        // const quantity = req.body.quantity as number |  undefined
         // const userId = req.body.userId as string | undefined
         
 
-        if(id !== undefined && productId !== undefined && paid !== undefined && buyerId !== undefined ){
-            if(typeof id !== "string" || typeof productId !== "string" || typeof paid !== "number" || typeof buyerId !== "string"){
+        if(id !== undefined && productId !== undefined && paid !== undefined && buyerId !== undefined && quantity !== undefined){
+            if(typeof id !== "string" || typeof productId !== "string" || typeof paid !== "number" || typeof buyerId !== "string" || typeof quantity !== "number"){
                 res.status(400)
                 throw new Error("Houve um erro de tipagem nos valores.")
             }
 
-            const [jatemesseid] = await db.raw(`SELECT * FROM purchases WHERE id = "${id}";`)
+            // const [jatemesseid] = await db.raw(`SELECT * FROM purchases WHERE id = "${id}";`)
             const [jatemesseiduser] = await db.raw(`SELECT * FROM users WHERE id = "${buyerId}";`)
             const [jatemesseidproduct] = await db.raw(`SELECT * FROM products WHERE id = "${productId}";`)
 
@@ -293,18 +293,24 @@ app.post('/purchases', async (req: Request, res:Response) =>{
             // const jatemesseiduser = users.find((user) => user.id === userId)
             // const jatemesseidproduct = products.find((product) => product.id === productId)
 
-            if(jatemesseid){
-                res.status(400)
-                throw new Error("Essa compra já foi realizada.")
-            }
-
+            // if(jatemesseid){
+            //     res.status(400)
+            //     throw new Error("Essa compra já foi realizada.")
+            // }
+            
             if(jatemesseiduser && jatemesseidproduct){
+                console.log("to aqui2")
 
                 
                 await db.raw(`INSERT INTO 
                 purchases(id, buyer_id, productId, paid, createdAt, delivered_at, total_price)
-                VALUES("${id}", "${buyerId}", "${productId}", "${paid}",DATETIME('now'),DATETIME('now'), "${0}")`);
+                VALUES("${id}", "${buyerId}", "${productId}", "${paid}",DATETIME('now'),"${null}", "${0}");`)
+
+
+                await db.insert({purchase_id: id, product_id: productId, quantity:quantity}).into("purchases_products");
+
                 res.status(201).send("Compra cadastrada com sucesso!")
+
 
 
                 //Força eles recebem o proprio valor.
@@ -492,17 +498,21 @@ app.delete("/users/:id", async (req: Request, res: Response) =>{
         const idrecebido = req.params.id as string | undefined
 
         if(idrecebido !== undefined){
-            // const jatemesseiduser = await db.raw(`SELECT * FROM users WHERE id = "${id}";`)
             const [jatemesseiduser] = await db.select("*").from("users").where({id: idrecebido})
             // const jatemesseiduser = users.find((user) => user.id === id)
             if(jatemesseiduser){
-                
                 // const indextodelete = users.findIndex((user) => user.id === id)
                 // if(indextodelete >= 0){
                     //     users.splice(indextodelete, 1)
                     // }
                     
-                await db("users").del().where({id: idrecebido})
+                await db.raw(`
+                        DELETE FROM users
+                                WHERE id = "${idrecebido}";
+                `)
+    
+                // await db.delete().from("users").where({ id: idrecebido })
+                // await db("users").del().where({id: idrecebido})
                 res.status(200).send("Usuário apagado com sucesso!")
             }
         }
@@ -579,7 +589,7 @@ app.delete("/purchases/:id/", async(req: Request, res: Response) =>{
                 //     products.splice(indextodelete, 1)
                 // }
                 await db("purchases").del().where({id: idrecebido})
-                res.status(200).send("Produto apagado com sucesso!")
+                res.status(200).send("Compra apagada com sucesso!")
             }
         }
         else{
@@ -753,6 +763,27 @@ app.put("/products/:id", async (req: Request, res: Response) =>{
         }
     }
     
+})
+
+//Testing if is correct the purchases_products
+app.get("/purchases_products", async (req: Request, res: Response) =>{
+    try {
+        const result = await db("purchases_products")
+        res.status(200).send(result)
+    } catch (error) {
+        if(res.statusCode === 200){
+            res.status(500)
+            res.send("Erro")
+        }
+
+        if(error instanceof Error){
+
+            res.send(error.message)
+        }
+        else{
+            console.log("Erro inesperado.")
+        }
+    }
 })
 
 // createUser("Gabriel","gabriel1234@gmail.com", "kaka123" )
