@@ -273,14 +273,14 @@ app.post('/purchases', async (req: Request, res:Response) =>{
         const buyerId = req.body.buyerId as string | undefined
         const productId = req.body.productId as string | undefined
         const paid = req.body.paid as number | undefined
-        const total_price = req.body.total_price as number | undefined
-        const delivered_at = req.body.delivered_at as number | undefined
+        // const total_price = req.body.total_price as number | undefined
+        // const delivered_at = req.body.delivered_at as number | undefined
         // const quantity = req.body.quantity as number |  undefined
         // const userId = req.body.userId as string | undefined
         
 
-        if(id !== undefined && productId !== undefined && paid !== undefined && buyerId !== undefined && total_price !== undefined && delivered_at !== undefined){
-            if(typeof id !== "string" || typeof productId !== "string" || typeof paid !== "number" || typeof buyerId !== "string" || typeof total_price !== "number"){
+        if(id !== undefined && productId !== undefined && paid !== undefined && buyerId !== undefined ){
+            if(typeof id !== "string" || typeof productId !== "string" || typeof paid !== "number" || typeof buyerId !== "string"){
                 res.status(400)
                 throw new Error("Houve um erro de tipagem nos valores.")
             }
@@ -300,20 +300,11 @@ app.post('/purchases', async (req: Request, res:Response) =>{
 
             if(jatemesseiduser && jatemesseidproduct){
 
-                const newPurchase = {
-                    id,
-                    buyerId,
-                    productId,
-                    paid,
-                    total_price,
-                    delivered_at
-                }
-
-                await db("purchases").insert(newPurchase)
+                
+                await db.raw(`INSERT INTO 
+                purchases(id, buyer_id, productId, paid, createdAt, delivered_at, total_price)
+                VALUES("${id}", "${buyerId}", "${productId}", "${paid}",DATETIME('now'),DATETIME('now'), "${0}")`);
                 res.status(201).send("Compra cadastrada com sucesso!")
-
-                // await db.raw(`INSERT INTO purchases(id, buyer_id, productId, quantity, total_price, paid, createdAt, delivered_at)
-                // VALUES("${id}", "${buyerId}", "${productId}", "${quantity}", "${totalPrice}", "${0}",DATETIME('now'), "${null}");)`);
 
 
                 //Força eles recebem o proprio valor.
@@ -502,7 +493,7 @@ app.delete("/users/:id", async (req: Request, res: Response) =>{
 
         if(idrecebido !== undefined){
             // const jatemesseiduser = await db.raw(`SELECT * FROM users WHERE id = "${id}";`)
-            const jatemesseiduser = await db.select("*").from("users").where({id: idrecebido})
+            const [jatemesseiduser] = await db.select("*").from("users").where({id: idrecebido})
             // const jatemesseiduser = users.find((user) => user.id === id)
             if(jatemesseiduser){
                 
